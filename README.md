@@ -29,11 +29,16 @@ GLOVE_URL = "https://nlp.stanford.edu/data/glove.6B.zip"
 
 For hw2
 
-uv venv --python=python3
-source .venv/bin/activate
 
-uv pip install -e ".[hw2]"
+	uv venv --python=python3
 
-python3 -m hw2_ann_exploration.annoy_benchmark
-python3 -m hw2_ann_exploration.ivfpq_benchmark
-python3 -m hw2_ann_exploration.hnsw_benchmark
+	source .venv/bin/activate
+
+	uv pip install -e ".[hw2]"
+
+
+	python3 -m hw2_ann_exploration.annoy_benchmark
+
+	python3 -m hw2_ann_exploration.ivfpq_benchmark
+
+	python3 -m hw2_ann_exploration.hnsw_benchmark
