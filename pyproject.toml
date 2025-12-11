@@ -12,6 +12,14 @@ hw1 = [
     "umap-learn"
 ]
 
+hw2 = [
+  "annoy",
+  "faiss-cpu",
+  "hnswlib",
+  "numpy",
+  "orjson"
+]
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
