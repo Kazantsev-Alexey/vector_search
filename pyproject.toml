@@ -25,6 +25,18 @@ hw3 = [
   "orjson"
 ]
 
+hw4 = [
+  "qdrant-client[grpc]",
+  "orjson"
+]
+
+hw5 = [
+  "qdrant-client[grpc]",
+  "orjson",
+  "fastembed",
+  "datasets"
+]
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
