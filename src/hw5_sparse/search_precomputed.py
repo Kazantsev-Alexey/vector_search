@@ -1,6 +1,5 @@
 import argparse
 import json
-import random
 import time
 from pathlib import Path
 from fastembed import SparseTextEmbedding
@@ -18,16 +17,8 @@ def read_jsonl(path: Path):
                 yield json.loads(line)
 
 
-def sample_queries(path: Path, n: int = 100):
-    result = []
-    for i, item in enumerate(read_jsonl(path)):
-        if i < n:
-            result.append(item)
-        else:
-            j = random.randint(0, i)
-            if j < n:
-                result[j] = item
-    return result
+def iter_queries(path: Path):
+    yield from read_jsonl(path)
 
 
 def load_ground_truth(path: Path) -> dict[str, set[str]]:
@@ -57,16 +48,17 @@ def main():
     client = QdrantClient(url=args.url, timeout=300)
     encoder = SparseTextEmbedding(model_name=SPLADE_MODEL)
 
-    queries = sample_queries(Path(args.queries), n=100)
+    queries_path = Path(args.queries)
     gt = load_ground_truth(Path(args.default))
 
     t_embed_start = time.time()
-    texts = [q["text"] for q in queries]
-    sparse_vecs = list(encoder.embed(texts))
-    embeddings = [
-        (str(q["_id"]), models.SparseVector(indices=v.indices.tolist(), values=v.values.tolist()))
-        for q, v in zip(queries, sparse_vecs)
-    ]
+    embeddings = []
+    for q in iter_queries(queries_path):
+        qid = str(q["_id"])
+        if qid not in gt:
+            continue
+        vec = list(encoder.embed([q["text"]]))[0]
+        embeddings.append((qid, models.SparseVector(indices=vec.indices.tolist(), values=vec.values.tolist())))
     embed_time = time.time() - t_embed_start
 
     t_search_start = time.time()
@@ -74,9 +66,6 @@ def main():
     used = 0
 
     for qid, vec in embeddings:
-        if qid not in gt:
-            continue
-
         res = client.query_points(
             collection_name=args.collection,
             query=vec,
@@ -98,6 +87,7 @@ def main():
         "total_search_time": search_time,
         "QPS": qps,
         "queries_used": used,
+        "method": "splade_precomputed",
         "embedding_time": embed_time,
     }
 

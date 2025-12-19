@@ -1,1 +1,1 @@
-{"MRR@10": 0.6434156378600823, "total_search_time": 0.10541009902954102, "QPS": 256.1424403219021, "queries_used": 27, "embedding_time": 3.93782901763916}
+{"MRR@10": 0.5851560846560847, "total_search_time": 0.7594912052154541, "QPS": 395.00128235835905, "queries_used": 300, "method": "splade_precomputed", "embedding_time": 7.696393966674805}
